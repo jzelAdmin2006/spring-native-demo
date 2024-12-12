@@ -17,4 +17,4 @@ jobs:
           java --version
           native-image --version
       - name: Build natively
-        run: gradlew nativeCompile
+        run: ./gradlew nativeCompile
