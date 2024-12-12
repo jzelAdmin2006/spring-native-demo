@@ -18,3 +18,11 @@ jobs:
           native-image --version
       - name: Build natively
         run: ./gradlew nativeCompile
+      - name: Upload binary to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./build/native/nativeCompile/demo
+          tag: v1.0
+          overwrite: true
+          body: "This is the latest release"
