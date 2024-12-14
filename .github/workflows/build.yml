@@ -2,11 +2,23 @@ name: GraalVM Native Image builds
 on: [push, pull_request]
 jobs:
   build:
-    name: Demo on ${{ matrix.os }}
+    name: Demo on ${{ matrix.os }} ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            arch: x64
+          - os: ubuntu-latest
+            arch: ARM64
+          - os: ubuntu-latest
+            arch: ARMv7
+          - os: macos-latest
+            arch: x64
+          - os: macos-latest
+            arch: ARM64
+          - os: windows-latest
+            arch: x64
     steps:
       - uses: actions/checkout@v4
       - uses: graalvm/setup-graalvm@v1
@@ -16,9 +28,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
       - name: Build natively
-        run: ./gradlew nativeCompile
+        run: ./gradlew nativeCompile -Parch=${{ matrix.arch }}
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: demo-${{ matrix.os }}
+          name: demo-${{ matrix.os }}-${{ matrix.arch }}
           path: ./build/native/nativeCompile/*
