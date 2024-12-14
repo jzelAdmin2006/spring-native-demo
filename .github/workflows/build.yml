@@ -10,9 +10,9 @@ jobs:
           - os: ubuntu-latest
             arch: x64
           - os: macos-latest
-            arch: x64
-          - os: macos-13
             arch: ARM64
+          - os: macos-13
+            arch: x64
           - os: windows-latest
             arch: x64
     steps:
@@ -24,7 +24,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
       - name: Build natively
-        run: ./gradlew nativeCompile -Parch=${{ matrix.arch }}
+        run: ./gradlew nativeCompile
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
