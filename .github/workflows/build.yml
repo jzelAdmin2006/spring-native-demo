@@ -19,10 +19,9 @@ jobs:
             arch: x64
     steps:
       - uses: actions/checkout@v4
-      - run: ls ${{ github.workspace }}
       - name: Build natively in case of Linux ARM64
         if: matrix.os == 'ubuntu-latest' && matrix.arch == 'ARM64'
-        run: docker run --rm --platform linux/arm64 -v ${{ github.workspace }}:/home/gradle/project -w /home/gradle/project gradle:jdk21-graal ./gradlew nativeCompile
+        run: docker run --rm --platform linux/arm64 -v ${{ github.workspace }}:/home/gradle/project -w /home/gradle/project gradle:jdk21-graal ./gradlew1 nativeCompile
       - name: Setup GraalVM
         if: matrix.os != 'ubuntu-latest' || matrix.arch != 'ARM64'
         uses: graalvm/setup-graalvm@v1
