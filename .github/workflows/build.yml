@@ -19,7 +19,7 @@ jobs:
             arch: x64
     steps:
       - uses: actions/checkout@v4
-      - name: Set up QEMU in case of Linux ARM64
+      - name: Set up QEMU in case of Linux ARM64 (a GitHub-hosted ARM64 runner would currently be fee-based for Linux, see https://github.blog/news-insights/product-news/arm64-on-github-actions-powering-faster-more-efficient-build-systems/)
         if: matrix.os == 'ubuntu-latest' && matrix.arch == 'ARM64'
         uses: docker/setup-qemu-action@v3
       - name: Build natively in case of Linux ARM64
