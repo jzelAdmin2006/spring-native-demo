@@ -2,14 +2,14 @@ name: GraalVM Native Image builds
 on: [push, pull_request]
 jobs:
   build:
-    name: Demo on ${{ matrix.os }} ${{ matrix.arch }}
+    name: Demo on ${{ matrix.os }} (${{ matrix.arch }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
           - os: ubuntu-latest
             arch: x64
-          - os: ubuntu-latest
+          - os: ubuntu-24.04-arm
             arch: ARM64
           - os: macos-latest
             arch: ARM64
@@ -19,14 +19,7 @@ jobs:
             arch: x64
     steps:
       - uses: actions/checkout@v4
-      - name: Set up QEMU in case of Linux ARM64 (a GitHub-hosted ARM64 runner would currently be fee-based for Linux, see https://github.blog/news-insights/product-news/arm64-on-github-actions-powering-faster-more-efficient-build-systems/)
-        if: matrix.os == 'ubuntu-latest' && matrix.arch == 'ARM64'
-        uses: docker/setup-qemu-action@v3
-      - name: Build natively in case of Linux ARM64
-        if: matrix.os == 'ubuntu-latest' && matrix.arch == 'ARM64'
-        run: docker run --rm --platform linux/arm64 -v ${{ github.workspace }}:/home/gradle/project -w /home/gradle/project gradle:jdk21-graal ./gradlew nativeCompile
       - name: Setup GraalVM
-        if: matrix.os != 'ubuntu-latest' || matrix.arch != 'ARM64'
         uses: graalvm/setup-graalvm@v1
         with:
           java-version: '21'
@@ -34,7 +27,6 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
       - name: Build natively
-        if: matrix.os != 'ubuntu-latest' || matrix.arch != 'ARM64'
         run: ./gradlew nativeCompile
       - name: Upload binary
         uses: actions/upload-artifact@v4
