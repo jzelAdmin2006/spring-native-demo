@@ -28,3 +28,11 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+graalvmNative {
+    binaries {
+        main {
+            buildArgs.addAll((project.findProperty('nativeExtraArgs') ?: '').split())
+        }
+    }
+}
