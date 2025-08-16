@@ -1,14 +1,6 @@
-FROM ghcr.io/graalvm/native-image-community:21-muslib AS build
-WORKDIR /code
+# syntax = devthefuture/dockerfile-x:1.4.2
 
-RUN microdnf --setopt=install_weak_deps=0 install -y findutils-4.8.0-7.el9
-
-COPY gradlew /code/gradlew
-COPY gradle /code/gradle
-COPY build.gradle settings.gradle /code/
-COPY src /code/src
-
-RUN ./gradlew nativeCompile -PnativeExtraArgs="--libc=musl --static" --no-daemon
+INCLUDE Dockerfile-standalone.native.build.base
 
 
 FROM scratch AS scratch-dir-supply
@@ -16,12 +8,7 @@ FROM scratch AS scratch-dir-supply
 
 FROM scratch
 
-WORKDIR /work/
-
-COPY --from=build /code/build/native/nativeCompile/demo /work/application
+COPY --from=build /app/build/native/nativeCompile/demo /work/application
 COPY --from=scratch-dir-supply --chown=1001:1001 / /tmp
 
-USER 1001
-
-EXPOSE 8080
-ENTRYPOINT ["./application"]
+INCLUDE Dockerfile-standalone.native.exec.base

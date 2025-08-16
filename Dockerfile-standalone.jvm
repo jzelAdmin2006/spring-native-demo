@@ -1,14 +1,8 @@
+# syntax = devthefuture/dockerfile-x:1.4.2
+
 FROM eclipse-temurin:21-jdk-alpine AS build
-WORKDIR /app
 
-COPY gradlew .
-COPY gradle gradle/
-COPY build.gradle .
-COPY settings.gradle .
-
-RUN ./gradlew --version
-
-COPY src src/
+INCLUDE Dockerfile-standalone.build.base
 
 RUN ./gradlew bootJar
 

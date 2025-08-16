@@ -1,0 +1,9 @@
+WORKDIR /app
+
+COPY gradlew .
+COPY gradle gradle/
+COPY build.gradle settings.gradle .
+
+RUN ./gradlew --version
+
+COPY src src/

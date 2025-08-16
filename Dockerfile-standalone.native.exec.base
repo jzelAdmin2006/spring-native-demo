@@ -1,0 +1,4 @@
+WORKDIR /work/
+EXPOSE 8080
+USER 1001
+ENTRYPOINT ["./application"]
