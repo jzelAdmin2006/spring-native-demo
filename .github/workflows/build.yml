@@ -26,25 +26,13 @@ jobs:
           distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
-      - name: Setup Mandrel (Linux only)
-        if: runner.os == 'Linux'
-        uses: graalvm/setup-graalvm@v1
-        with:
-          java-version: '21'
-          distribution: 'mandrel'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          native-image-job-reports: 'true'
-      - name: Install musl-tools (Linux only)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y musl-tools
-      - name: Build native image
+      - name: Build natively
         shell: bash
         run: |
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
-            echo "Building Linux musl-static binary..."
-            ./gradlew nativeCompile -PnativeExtraArgs="--libc=musl --static" --no-daemon
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            docker run --rm -v $PWD:/work -w /work ghcr.io/graalvm/native-image-community:21-muslib \
+              /bin/sh -c "microdnf --setopt=install_weak_deps=0 install -y findutils-4.8.0-7.el9 && ./gradlew nativeCompile -PnativeExtraArgs=\"--libc=musl --static\" --no-daemon"
           else
-            echo "Building native binary (dynamically linked) for $RUNNER_OS/$matrix.arch..."
             ./gradlew nativeCompile --no-daemon
           fi
       - name: Upload binary
