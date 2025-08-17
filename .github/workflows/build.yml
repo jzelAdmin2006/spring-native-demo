@@ -30,10 +30,17 @@ jobs:
         shell: bash
         run: |
           if [ "${{ runner.os }}" = "Linux" ]; then
-            docker run --rm -v "${GITHUB_WORKSPACE}:/work" -w /work ghcr.io/graalvm/native-image-community:21-muslib /bin/bash -c "
-              microdnf --setopt=install_weak_deps=0 install -y findutils-4.8.0-7.el9
-              ./gradlew nativeCompile -PnativeExtraArgs='--libc=musl --static' --no-daemon
-            "
+            docker run --rm \
+              -v "${{ github.workspace }}:/work" \
+              -w /work \
+              ghcr.io/graalvm/native-image-community:21-muslib \
+              bash -c "mkdir -p /work && microdnf --setopt=install_weak_deps=0 install -y findutils-4.8.0-7.el9"
+            
+            docker run --rm \
+              -v "${{ github.workspace }}:/work" \
+              -w /work \
+              ghcr.io/graalvm/native-image-community:21-muslib \
+              bash -c "./gradlew nativeCompile -PnativeExtraArgs='--libc=musl --static' --no-daemon"
           else
             ./gradlew nativeCompile --no-daemon
           fi
