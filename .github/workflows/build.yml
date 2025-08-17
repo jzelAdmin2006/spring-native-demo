@@ -27,6 +27,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
       - name: Build natively
+        shell: bash
         run: |
           if [[ "$RUNNER_OS" == "Linux" ]]; then
             ./gradlew nativeCompile -PnativeExtraArgs="--libc=musl --static"
