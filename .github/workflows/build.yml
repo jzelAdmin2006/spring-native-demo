@@ -34,15 +34,16 @@ jobs:
           distribution: 'mandrel'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
-      - name: Install musl-tools (Linux x64 only)
-        if: runner.os == 'Linux' && matrix.arch == 'x64'
+      - name: Install musl-tools (Linux only)
         run: sudo apt-get update && sudo apt-get install -y musl-tools
-      - name: Build natively
+      - name: Build native image
         shell: bash
         run: |
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
+          if [[ "$RUNNER_OS" == "Linux" && "${{ matrix.arch }}" == "x64" ]]; then
+            echo "Building Linux x64 musl-static binary..."
             ./gradlew nativeCompile -PnativeExtraArgs="--libc=musl --static" --no-daemon
           else
+            echo "Building native binary (dynamically linked) for $RUNNER_OS/$matrix.arch..."
             ./gradlew nativeCompile --no-daemon
           fi
       - name: Upload binary
