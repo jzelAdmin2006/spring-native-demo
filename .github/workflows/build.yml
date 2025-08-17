@@ -26,9 +26,14 @@ jobs:
           distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
-      - name: Install musl (Linux only)
+      - name: Setup Mandrel (Linux only)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y musl-tools
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '21'
+          distribution: 'mandrel'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-job-reports: 'true'
       - name: Build natively
         shell: bash
         run: |
