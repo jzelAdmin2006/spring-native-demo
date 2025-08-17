@@ -26,13 +26,16 @@ jobs:
           distribution: 'graalvm'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
+      - name: Install musl (Linux only)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
       - name: Build natively
         shell: bash
         run: |
           if [[ "$RUNNER_OS" == "Linux" ]]; then
-            ./gradlew nativeCompile -PnativeExtraArgs="--libc=musl --static"
+            ./gradlew nativeCompile -PnativeExtraArgs="--libc=musl --static" --no-daemon
           else
-            ./gradlew nativeCompile
+            ./gradlew nativeCompile --no-daemon
           fi
       - name: Upload binary
         uses: actions/upload-artifact@v4
