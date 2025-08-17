@@ -27,7 +27,12 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-job-reports: 'true'
       - name: Build natively
-        run: ./gradlew nativeCompile
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            ./gradlew nativeCompile -PnativeExtraArgs="--libc=musl --static"
+          else
+            ./gradlew nativeCompile
+          fi
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
